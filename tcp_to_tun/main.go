@@ -15,7 +15,7 @@ import (
 
 type CLI struct {
 	TUNAddr string `help:"address of the served tun addr" default:"192.168.10.1/32"`
-	TCPPort string `help:"number of the listened tcp address" default:"0.0.0.0:4663"`
+	TCPPort string `help:"number of the listened tcp address" default:":4663"`
 }
 
 func main() {

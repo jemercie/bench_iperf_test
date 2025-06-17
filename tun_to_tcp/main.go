@@ -12,7 +12,7 @@ import (
 
 type CLI struct {
 	TUNAddr string `help:"address of the served tun addr" default:"192.168.11.1/32"`
-	TCPPort string `help:"adress of the tcp port to dial" default:"localhost:4663"`
+	TCPPort string `help:"adress of the tcp port to dial" default:":4663"`
 }
 
 func main() {

@@ -36,6 +36,7 @@ dagger option to print the full trace:
 ### Cross Compile in GO
 to [cross compile in go](https://freshman.tech/snippets/go/cross-compile-go-programs/) we just have to change env variables like this:
 >`GOOS=linux GOARCH=amd64 go build -o cli_unix_bin`
+>`GOOS=linux GOARCH=amd64 go build -o srv_unix_bin`
 
 ### Need more than one entrypoint
 [run cmd as a daemon/service on alpine](https://medium.com/@mfranzon/how-to-create-and-manage-a-service-in-an-alpine-linux-container-93a97d5dad80)
@@ -61,3 +62,41 @@ rc-update add monitor_thing default
 service monitor_thing start
 
 ```
+
+### Env to test config
+
+#### CLI
+
+`dagger`
+
+`dagger call build --cli_bin=./tcp_to_tun/cli_unix_bin --srv_bin=./tun_to_tcp/srv_unix_bin --cli_daemon_conf=./.dagger/cli_as_daemon.conf --srv_daemon_conf=./.dagger/srv_as_daemon.conf  --progress=plain`
+
+```sh
+apk add iperf3 iproute2 openrc
+chmod +x /bin/cli
+chmod +x etc/init.d/monitor_cli
+openrc default
+touch /run/openrc/softlevel
+rc-update add monitor_cli default
+service monitor_cli start
+
+```
+
+#### SRV
+
+`dagger`
+
+`dagger call build --cli_bin=./tcp_to_tun/cli_unix_bin --srv_bin=./tun_to_tcp/srv_unix_bin --cli_daemon_conf=./.dagger/cli_as_daemon.conf --srv_daemon_conf=./.dagger/srv_as_daemon.conf  --progress=plain`
+
+```sh
+apk add iperf3 iproute2 openrc
+chmod +x /bin/srv
+chmod +x etc/init.d/monitor_srv
+openrc default
+touch /run/openrc/softlevel
+rc-update add monitor_srv default
+service monitor_srv start
+
+```
+
+tester a la main, ctrl+z puis bg pour gettre en background damn
