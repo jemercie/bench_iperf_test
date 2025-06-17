@@ -33,10 +33,11 @@ clean the cache:
 dagger option to print the full trace:
 >`dagger call <function> <options> --progress=plain`
 
+### Cross Compile in GO
 to [cross compile in go](https://freshman.tech/snippets/go/cross-compile-go-programs/) we just have to change env variables like this:
 >`GOOS=linux GOARCH=amd64 go build -o cli_unix_bin`
 
-
+### Need more than one entrypoint
 [run cmd as a daemon/service on alpine](https://medium.com/@mfranzon/how-to-create-and-manage-a-service-in-an-alpine-linux-container-93a97d5dad80)
 
 ```sh

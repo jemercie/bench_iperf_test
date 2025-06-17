@@ -37,20 +37,29 @@ func (m *TcpTunnel) GrepDir(ctx context.Context, directoryArg *dagger.Directory,
 }
 
 // func (t *TcpTunnel) Build(tcp_to_tun_dir *dagger.Directory, tun_to_tcp_dir *dagger.Directory) (string, error) {
-func (t *TcpTunnel) Build(cli_bin *dagger.File, srv_bin *dagger.File) (string, error) {
+func (t *TcpTunnel) Build(cli_bin *dagger.File, srv_bin *dagger.File, daemon_conf *dagger.File) *dagger.Container {
 
 	// builder := t.GetContainer("tcp_to_tun", "/src/", tcp_to_tun_dir)
-	ctx := context.Background()
+	// ctx := context.Background()
 	return dag.Container().
-		From("alpine").
-		WithExec([]string{"apk", "add", "iperf3", "go"}).
-		WithMountedFile("/src/cli", cli_bin).
-		WithExec([]string{"chmod", "+x", "src/cli"}).
-		WithExec([]string{"ls", "-la", "/src"}).
-		WithExposedPort(4633).
-		WithExec([]string{"./src/cli"}).
-		WithExec([]string{"iperf3", "-c", "192.168.11.1", "-B", "192.168.10.1", "-t", "30"}).
-		Stdout(ctx)
+		From("alpine/git").
+		WithExposedPort(4663).
+		WithMountedFile("/bin/cli", cli_bin).
+		WithMountedFile("etc/init.d/monitor_cli", daemon_conf).
+		WithExec([]string{"apk", "add", "iperf3"}).
+		WithExec([]string{"apk", "add", "iproute2"}).
+		WithExec([]string{"apk", "add", "openrc"}).
+		WithExec([]string{"chmod", "+x", "/bin/cli"}).
+		WithExec([]string{"chmod", "+x", "etc/init.d/monitor_cli"}).
+		WithExec([]string{"openrc", "default"}).
+		WithExec([]string{"rc-update", "add", "monitor_cli", "default"}).
+		WithExec([]string{"mkdir", "-p", "/run/openrc"}).
+		WithExec([]string{"touch", "/run/openrc/softlevel"}). // to force bcs it's read only filesystem (maybe not a good idea)
+		WithExec([]string{"service", "monitor_cli", "start"}).
+		WithExec([]string{"netstat", "-an"}).
+		// WithExec([]string{"./src/cli"}).
+		WithExec([]string{"iperf3", "-c", "192.168.11.1", "-B", "192.168.10.1", "-t", "30"})
+	// Stdout(ctx)
 	// AsService()
 	// Stdout(ctx)
 	// Terminal()
