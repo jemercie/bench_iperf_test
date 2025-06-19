@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 	"net/netip"
@@ -12,7 +13,7 @@ import (
 
 type CLI struct {
 	TUNAddr string `help:"address of the served tun addr" default:"192.168.11.1/32"`
-	TCPPort string `help:"adress of the tcp port to dial" default:":4663"`
+	TCPPort string `help:"adress of the tcp port to dial" default:"srv:4663"`
 }
 
 func main() {
@@ -27,19 +28,20 @@ func main() {
 
 	conn, err := net.Dial("tcp", cli.TCPPort)
 	if err != nil {
-		log.Error(err.Error())
+		log.Error("cli dial tcp:", err.Error())
 		return
 	}
 	defer conn.Close()
-	log.Info("tcp conn created")
+	log.Info("cli tcp conn created")
 
 	tun, err := initTUN(cli.TUNAddr, 1500)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
+	log.Info("cli TUN Created")
 	defer tun.Close()
-	log.Info("TUN (192.168.11.1/32) to TCP (localhost:4663) serving")
+	log.Info("cli TUN (192.168.11.1/32) to TCP (default:4663) serving")
 	// go func() {
 	// 	msg := "message"
 	// 	for {
@@ -51,7 +53,7 @@ func main() {
 
 	// initializeMeterProvider()
 
-	// go ForwardTCPToTUN(log, tun, conn)
+	go ForwardTCPToTUN(log, tun, conn)
 	forwardTUNToTCP(log, tun, conn)
 
 }
@@ -60,15 +62,15 @@ func initTUN(ip string, mtu int) (*tun.TUN, error) {
 
 	tun, err := tun.NewTUN()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cli creating tun failed", err)
 	}
 	if err = tun.Setup(netip.MustParsePrefix(ip), mtu); err != nil {
 		tun.Close()
-		return nil, err
+		return nil, fmt.Errorf("cli setup tun failed", err)
 	}
 	if err = tun.AddRoute(netip.MustParsePrefix("192.168.10.1/32")); err != nil {
 		tun.Close()
-		return nil, err
+		return nil, fmt.Errorf("cli adding route to tun failed", err)
 	}
 	return tun, nil
 }

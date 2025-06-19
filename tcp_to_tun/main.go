@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 	"net/netip"
@@ -15,7 +16,7 @@ import (
 
 type CLI struct {
 	TUNAddr string `help:"address of the served tun addr" default:"192.168.10.1/32"`
-	TCPPort string `help:"number of the listened tcp address" default:":4663"`
+	TCPPort string `help:"number of the listened tcp address" default:"0.0.0.0:4663"`
 }
 
 func main() {
@@ -29,17 +30,19 @@ func main() {
 	tun, err := InitTUN(cli.TUNAddr, 1500)
 	if err != nil {
 		log.Error(err.Error())
+		return
 	}
-	log.Info("TUN Created")
+	log.Info("srv TUN Created")
 	defer tun.Close()
 
 	listener, conn, err := InitTCPServer(cli.TCPPort)
 	if err != nil {
 		log.Error(err.Error())
+		return
 	}
 	defer listener.Close()
 	defer conn.Close()
-	log.Info("TUN (192.168.10.1/32) to TCP (localhost:4663) serving")
+	log.Info("srv TUN (192.168.10.1/32) to TCP (0.0.0.0:4663) serving")
 
 	go forwardTUNToTCP(log, tun, conn)
 	ForwardTCPToTUN(log, tun, conn)
@@ -51,15 +54,15 @@ func InitTUN(ip string, mtu int) (*tun.TUN, error) {
 
 	tun, err := tun.NewTUN()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("srv creating tun failed", err)
 	}
 
 	if err = tun.Setup(netip.MustParsePrefix(ip), mtu); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("ssrv etup tun failed", err)
 	}
 	if err = tun.AddRoute(netip.MustParsePrefix("192.168.11.1/32")); err != nil {
 		tun.Close()
-		return nil, err
+		return nil, fmt.Errorf("srv add route tun failed", err)
 	}
 	return tun, nil
 }
@@ -70,13 +73,13 @@ func InitTCPServer(port string) (net.Listener, net.Conn, error) {
 
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("srv listener creation failed :%w", err)
 	}
 
 	conn, err := listener.Accept()
 	if err != nil {
 		listener.Close()
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("srv accept connection failed", err)
 	}
 
 	return listener, conn, nil

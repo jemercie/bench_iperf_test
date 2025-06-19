@@ -37,48 +37,73 @@ func (m *TcpTunnel) GrepDir(ctx context.Context, directoryArg *dagger.Directory,
 }
 
 // func (t *TcpTunnel) Build(tcp_to_tun_dir *dagger.Directory, tun_to_tcp_dir *dagger.Directory) (string, error) {
-func (t *TcpTunnel) Build(cli_bin *dagger.File, srv_bin *dagger.File, cli_daemon_conf *dagger.File, srv_daemon_conf *dagger.File) *dagger.Container {
+func (t *TcpTunnel) Build(cli_bin *dagger.File, srv_bin *dagger.File, cli_daemon_conf *dagger.File, srv_daemon_conf *dagger.File) (*dagger.Service, error) {
 
 	// builder := t.GetContainer("tcp_to_tun", "/src/", tcp_to_tun_dir)
-	// ctx := context.Background()
+	ctx := context.Background()
+
 	srv := dag.Container().
-		From("alpine").
-		WithExposedPort(4663).
+		From("debian").
+		WithExposedPort(4663, dagger.ContainerWithExposedPortOpts{Protocol: "TCP"}).
 		WithMountedFile("/bin/srv", srv_bin).
 		WithMountedFile("etc/init.d/monitor_iperf3_srv", srv_daemon_conf).
-		WithExec([]string{"apk", "add", "iperf3"}).
-		WithExec([]string{"apk", "add", "iproute2"}).
-		WithExec([]string{"apk", "add", "openrc"}).
+		WithExec([]string{"apt", "update"}).
+		WithExec([]string{"apt", "install", "-y", "iperf3"}).
+		WithExec([]string{"apt", "install", "-y", "iproute2"}).
+		WithExec([]string{"apt", "install", "-y", "openrc"}).
+		WithExec([]string{"apt", "install", "-y", "sudo"}).
+		WithExec([]string{"apt", "install", "-y", "golang"}).
 		WithExec([]string{"chmod", "+x", "/bin/srv"}).
+		WithExec([]string{"mkdir", "-p", "/dev/net"}).
+		WithExec([]string{"touch", "/dev/net/tun"}).
 		WithExec([]string{"chmod", "+x", "etc/init.d/monitor_iperf3_srv"}).
 		WithExec([]string{"openrc", "default"}).
+		// WithExec([]string{"mkdir", "-p", "dev/net/tun"}).
+		// WithExec([]string{"chmod", "600", "dev/net/tun"}).
 		WithExec([]string{"touch", "/run/openrc/softlevel"}). // to force bcs it's read only filesystem (maybe not a good idea)
 		WithExec([]string{"rc-update", "add", "monitor_iperf3_srv", "default"}).
 		WithExec([]string{"service", "monitor_iperf3_srv", "start"}).
-		WithEntrypoint([]string{"srv"}).
-		AsService()
+		WithEntrypoint([]string{"sudo", "srv"}).
+		AsService().
+		WithHostname("srv")
+
+	_, err := srv.Start(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	cli := dag.Container().
-		From("alpine").
-		WithExposedPort(4663).
+		From("debian").
+		WithExposedPort(4663, dagger.ContainerWithExposedPortOpts{Protocol: "TCP"}).
 		WithMountedFile("/bin/cli", cli_bin).
 		WithMountedFile("etc/init.d/monitor_iperf3_cli", cli_daemon_conf).
-		WithServiceBinding("srv", srv).
-		WithExec([]string{"apk", "add", "iperf3"}).
-		WithExec([]string{"apk", "add", "iproute2"}).
-		WithExec([]string{"apk", "add", "openrc"}).
+		WithExec([]string{"apt", "update"}).
+		WithExec([]string{"apt", "install", "-y", "iperf3"}).
+		WithExec([]string{"apt", "install", "-y", "iproute2"}).
+		WithExec([]string{"apt", "install", "-y", "openrc"}).
+		WithExec([]string{"apt", "install", "-y", "sudo"}).
+		WithExec([]string{"mkdir", "install", "-y", "sudo"}).
+		WithExec([]string{"apt", "install", "mkdir", "golang"}).
 		WithExec([]string{"chmod", "+x", "/bin/cli"}).
+		WithExec([]string{"mkdir", "-p", "/dev/net"}).
+		WithExec([]string{"touch", "/dev/net/tun"}).
 		WithExec([]string{"chmod", "+x", "etc/init.d/monitor_iperf3_cli"}).
 		WithExec([]string{"openrc", "default"}).
+		// WithExec([]string{"mkdir", "-p", "dev/net/net"}).
+		// WithExec([]string{"chmod", "600", "dev/net/net"}).
 		WithExec([]string{"touch", "/run/openrc/softlevel"}). // to force bcs it's read only filesystem (maybe not a good idea)
 		WithExec([]string{"rc-update", "add", "monitor_iperf3_cli", "default"}).
 		WithExec([]string{"service", "monitor_iperf3_cli", "start"}).
-		WithExec([]string{"cli"})
-	// WithExec([]string{"iperf3", "-c", "192.168.11.1", "-B", "192.168.10.1", "-t", "30"})
-	// Stdout(ctx)
-	// AsService()
-	// Stdout(ctx)
-	return cli
+		WithEntrypoint([]string{"sudo", "cli"}).
+		AsService().
+		WithHostname("cli")
+
+	_, err = cli.Start(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return cli, nil
 }
 
 // func (t *TcpTunnel) GetContainer(binary_name string, workdir string, source *dagger.Directory) *dagger.Container {
