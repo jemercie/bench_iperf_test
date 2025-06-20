@@ -1,4 +1,3 @@
-5 term
 
 - `iperf3 -s -B 192.168.10.1`
 - `iperf3 -c 192.168.10.1 -B 192.168.11.1`
@@ -11,6 +10,8 @@
 `sudo tcpdump -i utun5 -n -S tcp`
 `sudo tcpdump -i utun4 -n -S tcp`
 
+ping server
+
 print routes:
 `netstat -rn -f inet`
 delete route:
@@ -18,12 +19,28 @@ delete route:
 
 [disable firewal stealth mode and now kernel answer to pings](https://discussions.apple.com/thread/2639727?sortBy=rank)
 
--> the problem is that the syn, ack of the tcp handshake is never sent anywhere so problem.
-
 
 and damn it doesn't work krkrkr
 
-### Dagger
+## iperf3
+
+[documentation](https://iperf.fr/iperf-doc.php)
+
+`--logfile </path/name>` to get the output in a file
+
+
+## Docker
+
+[compose capp_add?](https://forums.docker.com/t/docker-compose-order-of-cap-drop-and-cap-add/97136)
+
+[docker network types](https://devopssec.fr/article/fonctionnement-manipulation-reseau-docker)
+-> default network is type `bridge`
+
+[docker compose connection between containers](https://stackoverflow.com/questions/65042615/docker-compose-connection-between-containers)
+
+
+
+## Dagger
 
 `dagger init --name=tcp_tunnel --sdk=go` to init the dagger module
 
@@ -114,7 +131,3 @@ rc-update add monitor_cli default
 service monitor_cli start
 
 ```
-
-
-tester a la main, ctrl+z puis bg pour gettre en background damn
-
