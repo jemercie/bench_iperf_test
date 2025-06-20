@@ -1,6 +1,6 @@
 
 **build:**
-``` sh
+``` bash
 cd benchmark_iperf_test/
 make build
 ```
@@ -10,13 +10,14 @@ make build
 cd tcp_to_tun/
 docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --rm --name server srv
 ```
+`iperf3 -s -B 192.168.10.1`
 
 **start client:**
 ```
 cd tun_to_tcp/
 docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --rm --name client cli
 ```
-
+`iperf3 -c 192.168.10.1 -B 192.168.11.1 -t 30`
 
 - `iperf3 -s -B 192.168.10.1`
 - `iperf3 -c 192.168.10.1 -B 192.168.11.1`
