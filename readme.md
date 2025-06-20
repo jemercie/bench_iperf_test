@@ -1,4 +1,23 @@
 
+**build:**
+``` sh
+cd benchmark_iperf_test/
+make build
+```
+
+**start server:**
+```
+cd tcp_to_tun/
+docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --rm --name server srv
+```
+
+**start client:**
+```
+cd tun_to_tcp/
+docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --rm --name client cli
+```
+
+
 - `iperf3 -s -B 192.168.10.1`
 - `iperf3 -c 192.168.10.1 -B 192.168.11.1`
 -  and launch `tun_to_tcp` and `tcp_tp_tun`
@@ -18,7 +37,6 @@ delete route:
 `route delete <destination ip or interface>`
 
 [disable firewal stealth mode and now kernel answer to pings](https://discussions.apple.com/thread/2639727?sortBy=rank)
-
 
 and damn it doesn't work krkrkr
 
