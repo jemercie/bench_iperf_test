@@ -12,12 +12,20 @@ docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --
 ```
 `iperf3 -s -B 192.168.10.1`
 
+```sh
+cat var/log/srv_log
+```
+
 **start client:**
 ```
 cd tun_to_tcp/
 docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --rm --name client cli
 ```
 `iperf3 -c 192.168.10.1 -B 192.168.11.1 -t 30`
+
+```sh
+cat var/log/cli_log
+```
 
 - `iperf3 -s -B 192.168.10.1`
 - `iperf3 -c 192.168.10.1 -B 192.168.11.1`
