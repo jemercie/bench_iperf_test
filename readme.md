@@ -1,7 +1,7 @@
 
 **build:**
 ``` bash
-cd benchmark_iperf_test/
+cd bench_iperf_test/
 make build
 ```
 
@@ -23,12 +23,13 @@ docker run -it --cap-add=NET_ADMIN --device=/dev/net/tun --network tcp-tunnel --
 - `iperf3 -c 192.168.10.1 -B 192.168.11.1`
 -  and launch `tun_to_tcp` and `tcp_tp_tun`
 
-`ifconfig`
-`netstat -rn`
-`netstat -an | grep 5201`
-`tcpdump -i utun5 -v` -- utun5 or the created output tun
-`sudo tcpdump -i utun5 -n -S tcp`
-`sudo tcpdump -i utun4 -n -S tcp`
+**useful cmds:**
+- `ifconfig`
+- `netstat -rn`
+- `netstat -an | grep 5201`
+- `tcpdump -i utun5 -v` -- utun5 or the created output tun
+- `sudo tcpdump -i utun5 -n -S tcp`
+- `sudo tcpdump -i utun4 -n -S tcp`
 
 ping server
 
