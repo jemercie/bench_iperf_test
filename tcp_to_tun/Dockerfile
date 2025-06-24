@@ -5,7 +5,7 @@ COPY ./src/srv_unix_bin /bin/srv
 COPY ./srv_as_daemon.conf /etc/init.d/tunnel-server
 
 RUN apt update
-RUN apt install -y iperf3 iproute2 openrc golang sudo htop inetutils-ping
+RUN apt install -y iperf3 inetutils-ping iproute2 openrc golang net-tools sudo htop 
 RUN chmod +x /bin/srv
 RUN chmod +x /etc/init.d/tunnel-server
 RUN sudo rc-update add tunnel-server default

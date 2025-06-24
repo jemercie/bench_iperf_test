@@ -6,7 +6,7 @@ COPY ./cli_as_daemon.conf /etc/init.d/tunnel-client
 
 
 RUN apt update
-RUN apt install -y iperf3 iproute2 openrc golang sudo htop inetutils-ping
+RUN apt install -y iperf3 inetutils-ping iproute2 openrc golang sudo htop net-tools 
 RUN chmod +x /bin/cli
 RUN chmod +x /etc/init.d/tunnel-client
 RUN sudo rc-update add tunnel-client default

@@ -74,10 +74,10 @@ func initTUN(ip string, mtu int) (*tun.TUN, error) {
 		tun.Close()
 		return nil, fmt.Errorf("cli setup tun failed", err)
 	}
-	if err = tun.AddRoute(netip.MustParsePrefix("192.168.10.1/32")); err != nil {
-		tun.Close()
-		return nil, fmt.Errorf("cli adding route to tun failed", err)
-	}
+	// if err = tun.AddRoute(netip.MustParsePrefix("192.168.10.1/32")); err != nil {
+	// 	tun.Close()
+	// 	return nil, fmt.Errorf("cli adding route to tun failed", err)
+	// }
 	return tun, nil
 }
 
