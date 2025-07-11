@@ -6,9 +6,11 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define "vm1kk" do |vmmm1|
     vmmm1.vm.network "private_network", ip: "192.168.33.10"
+    vmmm1.vm.synced_folder "./src/srv/srv", "/bin/"
   end
   config.vm.define "vm2kk" do |vmmm2|
     vmmm2.vm.network "private_network", ip: "192.168.33.11"
+    vmmm2.vm.synced_folder "./src/cli/cli", "/bin/"
   end
 end
 

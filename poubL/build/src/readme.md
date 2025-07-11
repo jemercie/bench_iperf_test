@@ -14,4 +14,3 @@ et boum! (cv encore etre plein de rebondissement mais bon)
 
 
 https://docs.gitlab.com/runner/executors/custom_examples/libvirt/
-
