@@ -25,7 +25,7 @@ func main() {
 		&cli,
 		kong.Name("tcp-to-tun 4test"),
 	)
-	logfd, err := os.Create("~/bin/cli_log")
+	logfd, err := os.Create("../log/cli_log")
 	if err != nil {
 		println("failed create cli logfile")
 		return
