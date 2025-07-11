@@ -14,7 +14,7 @@ import (
 
 type CLI struct {
 	TUNAddr string `help:"address of the served tun addr" default:"192.168.11.1/32"`
-	TCPPort string `help:"adress of the tcp port to dial" default:"jemercie-vm-capsule:4663"`
+	TCPPort string `help:"adress of the tcp port to dial" default:"default:4663"`
 }
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 		&cli,
 		kong.Name("tcp-to-tun 4test"),
 	)
-	logfd, err := os.Create("./var/log/cli_log")
+	logfd, err := os.Create("~/bin/cli_log")
 	if err != nil {
 		println("failed create cli logfile")
 		return
