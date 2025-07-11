@@ -1,0 +1,13 @@
+<network>
+    <name>tunnel-bench<name/>
+    <!-- no uuid -> generated at network creation -->
+    <!-- no forward so it works on isolated mode -->
+    <bridge name='virbr0'/>
+    <ip adress="192.168.10.1" netmask="255.255.255.0">
+    <!-- dhcp? -->
+    <!-- range? -->
+    <host mac="52:54:00:aa:bb:01" name="server-tunnel" ip="192.168.11.2"/>
+    <host mac="52:54:00:aa:bb:02" name="client-tunnel" ip="192.168.12.2"/>
+    </ip>
+
+</network>
