@@ -43,5 +43,5 @@ func (m *VmBench) YAY(src *dagger.File) {
 		From("debian").
 		WithMountedFile("/src", src).
 		WithExec([]string{"apt", "update"}).
-		WithExec([]string{"apt", "install", "qemu-kvm", "libvirt-daemon-systemt"})
+		WithExec([]string{"apt", "install", "-y", "qemu-kvm", "libvirt-daemon-systemt", "git"})
 }

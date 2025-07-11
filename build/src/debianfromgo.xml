@@ -42,7 +42,7 @@
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/Users/jemercie/Downloads/ubuntu-24.04.2-desktop-amd64.iso'/>
+      <source file='/Users/jemercie/Downloads/debian-12.11.0-arm64-netinst.iso'/>
       <target dev='sda' bus='scsi'/>
       <readonly/>
       <alias name='scsi0-0-0-0'/>
